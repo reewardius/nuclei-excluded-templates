@@ -1,0 +1,34 @@
+id: gitlab-user-enum
+
+info:
+  name: GitLab - User Enumeration
+  author: Suman_Kar
+  severity: info
+
+http:
+  - raw:
+      - |
+        GET /users/{{user}}/exists HTTP/1.1
+        Host: {{Hostname}}
+        Accept: application/json, text/plain, */*
+        Referer: {{BaseURL}}
+
+    payloads:
+      user: helpers/wordlists/user-list.txt
+    stop-at-first-match: true
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "exists.*:true"
+
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: header
+        words:
+          - "application/json"
